@@ -1,21 +1,19 @@
 'use strict';
-const userForm = new UserForm(); 
-userForm.loginFormCallback = data => {
-    ApiConnector.login(data, callback => {
-      if (callback.success === true) {
-          location.reload(); //войди
-      } else{
-        UserForm.setLoginErrorMessage(callback.data); //выведи ошибку
-      }
-    });
-  }
+const userForm = new UserForm();
+userForm.loginFormCallback = data => ApiConnector.login(data, response => {
+    if (!response.success) {
+        return userForm.setLoginErrorMessage(response.error);
+    }
+    userForm.loginFormAction(response);
+    location.reload();
+    return;
+});
 
-  userForm.registerFormCallback = data => {
-    ApiConnector.register(data, callback => {
-      if (callback.success === true) {
-          location.reload(); //войди
-      } else{
-        userForm.setLoginErrorMessage(callback.data); //выведи ошибку
-      }
-    });
-  }
+userForm.registerFormCallback = newData => ApiConnector.register(newData, response => {
+    if (!response.success) {
+        return userForm.setRegisterErrorMessage(response.error);
+    }
+    userForm.registerFormAction(response);
+    location.reload();
+    return;
+});
